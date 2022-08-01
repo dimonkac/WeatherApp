@@ -1,20 +1,15 @@
 import React from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {ActivityIndicator, FlatList, Text, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import Morning from '../../assets/svg/Morning';
 import Temperature from '../../assets/svg/Medium-temperature';
-import {timeConverter} from '../utils/timeConverter';
 import {IRootReducer} from '../store/reducers';
+import {SmallCard} from '../components/SmallCard';
+import {styles} from './styles';
 
 export const WeatherDay = () => {
   const {name, weatherCurrentDate, weatherMounth, isLoading} = useSelector(
-    (state: IRootReducer) => state.weatherReducer,
+    (state: IRootReducer) => state.weather,
   );
 
   return !isLoading ? (
@@ -26,7 +21,7 @@ export const WeatherDay = () => {
           <Temperature width={45} height={45} />
           {weatherCurrentDate && (
             <Text style={styles.temperature}>
-              t = {weatherCurrentDate.temp}
+              t = {weatherCurrentDate.temperature}
             </Text>
           )}
         </View>
@@ -36,13 +31,8 @@ export const WeatherDay = () => {
           <FlatList
             data={weatherMounth.slice(0, 5)}
             showsVerticalScrollIndicator={false}
-            keyExtractor={item => `${item.dt}` + `${item.humidit}`}
-            renderItem={item => (
-              <View style={styles.smallCard}>
-                <Text>{timeConverter(item.item.dt)}</Text>
-                <Text>t = {item.item.temp.average}</Text>
-              </View>
-            )}
+            keyExtractor={item => `${item.day}` + `${item.date}`}
+            renderItem={({item}) => <SmallCard item={item} />}
           />
         )}
       </View>
@@ -51,40 +41,3 @@ export const WeatherDay = () => {
     <ActivityIndicator size="large" color="#00ff00" />
   );
 };
-
-const styles = StyleSheet.create({
-  main: {
-    flex: 1,
-  },
-  card: {
-    borderWidth: 1,
-    flex: 2,
-    marginBottom: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  list: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 2,
-  },
-  smallCard: {
-    minWidth: '94%',
-    alignItems: 'center',
-    marginTop: 4,
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingVertical: 4,
-  },
-  city: {
-    fontSize: 24,
-    marginBottom: 5,
-  },
-  temperatureCard: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-  },
-  temperature: {
-    fontSize: 20,
-  },
-});

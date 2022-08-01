@@ -1,18 +1,18 @@
 import {all, put, takeLatest} from 'redux-saga/effects';
-import * as actions from '../actions/weatherActions';
-import {
-  apiWeather,
-  apiWeatherForecast,
-  apiWeatherMount,
-} from '../../services/serviceAPI';
+import {apiWeather} from '../../services/serviceAPI';
 import {ILocation} from '../../services/types';
+import {
+  failureWeather,
+  successMounthWeather,
+  successWeather,
+} from '../reducers/weatherReducers';
 
-interface IWeatherSagaAction {
-  data: ILocation;
+export interface IWeatherSagaAction {
+  payload: ILocation;
 }
 interface IResponseGenerator {
   config?: any;
-  data?: any;
+  data: any;
   duration: number;
   headers?: any;
   ok: boolean;
@@ -22,61 +22,66 @@ interface IResponseGenerator {
 }
 
 export function* weatherDaySaga(action: IWeatherSagaAction) {
+  console.log(action);
   try {
     const response: IResponseGenerator = yield apiWeather({
-      q: action.data.q,
-      units: action.data.units,
+      location: 'Zaporizhzhia',
+      format: 'json',
+      u: 'c',
     });
-    if (response.status === 200) {
-      yield put(actions.successWeather(response.data));
+    console.log('reaponse', response);
+    if (response?.status === 200) {
+      console.log(response);
+      yield put(successWeather(response.data.current_observation));
+      yield put(successMounthWeather(response.data));
     } else {
-      yield put(actions.failureWeather());
+      yield put(failureWeather());
     }
   } catch (e) {
     console.log('weatherSaga', e);
-    yield put(actions.failureWeather());
+    yield put(failureWeather());
   }
 }
 
-export function* weatherMounthSaga(action: IWeatherSagaAction) {
-  try {
-    const response: IResponseGenerator = yield apiWeatherMount({
-      q: action.data.q,
-      units: action.data.units,
-    });
-    if (response?.status === 200) {
-      yield put(actions.successMounthWeather(response.data));
-    } else {
-      yield put(actions.failureMounthWeather());
-    }
-  } catch (error) {
-    console.log(error);
-    yield put(actions.failureMounthWeather());
-  }
-}
+// export function* weatherMounthSaga(action: IWeatherSagaAction) {
+//   try {
+//     const response: IResponseGenerator = yield apiWeatherMount({
+//       q: action.payload.q,
+//       units: action.payload.units,
+//     });
+//     if (response?.status === 200) {
+//       yield put(successMounthWeather(response.data));
+//     } else {
+//       yield put(failureMounthWeather());
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     yield put(failureMounthWeather());
+//   }
+// }
 
-export function* weatherCalendarSaga(action: IWeatherSagaAction) {
-  try {
-    const response: IResponseGenerator = yield apiWeatherForecast({
-      q: action.data.q,
-    });
-    console.log(response);
-    if (response.status === 200) {
-      yield put(actions.successCalendarhWeather(response.data));
-    } else {
-      yield put(actions.failureCalendarhWeather());
-    }
-  } catch (error) {
-    console.log('calendar saga', error);
-  }
-}
+// export function* weatherCalendarSaga(action: IWeatherSagaAction) {
+//   try {
+//     const response: IResponseGenerator = yield apiWeatherForecast({
+//       q: action.payload.q,
+//     });
+//     console.log(response);
+//     if (response.status === 200) {
+//       yield put(successCalendarhWeather(response.data));
+//     } else {
+//       yield put(failureCalendarhWeather());
+//     }
+//   } catch (error) {
+//     console.log('calendar saga', error);
+//   }
+// }
 
 export function* watchWeatherSaga() {
-  yield all([takeLatest(actions.FETCH_WEATHER as any, weatherDaySaga)]);
-  yield all([
-    takeLatest(actions.FETCH_MOUNTH_WEATHER as any, weatherMounthSaga),
-  ]);
-  yield all([
-    takeLatest(actions.FETCH_CALENDAR_WEATHER as any, weatherCalendarSaga),
-  ]);
+  yield all([takeLatest('weather/fetchWeather' as any, weatherDaySaga)]);
+  // yield all([
+  //   takeLatest('weather/fetchMounthWeather' as any, weatherMounthSaga),
+  // ]);
+  // yield all([
+  //   takeLatest('weather/fetchCalendarhWeather' as any, weatherCalendarSaga),
+  // ]);
 }

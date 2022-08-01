@@ -1,21 +1,23 @@
 import React, {useState} from 'react';
-import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
+import {ActivityIndicator, Text, View} from 'react-native';
 import {Calendar} from 'react-native-calendars';
 import {useSelector} from 'react-redux';
+import {BigCard} from '../components/BigCard';
 import {IListMounth} from '../services/types';
 import {IRootReducer} from '../store/reducers';
 import {timeConverter} from '../utils/timeConverter';
+import {styles} from './styles';
 
 export const WeatherCalendar = () => {
   const [choozen, setChoozen] = useState<any>([]);
   const {weatherMounth, isLoading} = useSelector(
-    (state: IRootReducer) => state.weatherReducer,
+    (state: IRootReducer) => state.weather,
   );
   const displayDay = (day: string) => {
     const filterDay = weatherMounth?.filter(
-      (item: IListMounth) => timeConverter(item.dt) === day,
+      (item: IListMounth) => timeConverter(item.date) === day,
     );
-    if (timeConverter(choozen[0]?.dt) !== day) {
+    if (timeConverter(choozen[0]?.date) !== day) {
       setChoozen(filterDay);
     } else {
       setChoozen([]);
@@ -26,20 +28,12 @@ export const WeatherCalendar = () => {
     <View style={styles.main}>
       <Text>WeatherCalendar</Text>
       <Calendar
-        current={`${new Date().getFullYear()}-${
-          new Date().getMonth() + 1
-        }-${new Date().getDate()}`}
-        minDate={`${new Date().getFullYear()}-${new Date().getMonth() + 1}-${
-          new Date().getDate() + 1
-        }`}
-        maxDate={timeConverter(weatherMounth[29].dt)}
+        minDate={timeConverter(weatherMounth[0].date)}
+        maxDate={timeConverter(weatherMounth[10].date)}
         onDayPress={day => {
           displayDay(day.dateString);
         }}
         monthFormat={'yyyy-MMMM'}
-        onMonthChange={month => {
-          console.log('month changed', month);
-        }}
         hideExtraDays={true}
         disableMonthChange={true}
         firstDay={1}
@@ -47,34 +41,9 @@ export const WeatherCalendar = () => {
         onPressArrowRight={addMonth => addMonth()}
         enableSwipeMonths={true}
       />
-      {choozen.length ? (
-        <View style={styles.detailCard}>
-          <Text style={styles.text}>date: {timeConverter(choozen[0].dt)}</Text>
-          <Text style={styles.text}>t = {choozen[0].temp.average}</Text>
-          <Text style={styles.text}>
-            t(max) = {choozen[0].temp.average_max}
-          </Text>
-          <Text style={styles.text}>
-            t(min) = {choozen[0].temp.average_min}
-          </Text>
-        </View>
-      ) : null}
+      {choozen.length ? <BigCard choozen={choozen[0]} /> : null}
     </View>
   ) : (
     <ActivityIndicator size="large" color="#00ff00" />
   );
 };
-
-const styles = StyleSheet.create({
-  main: {
-    flex: 1,
-  },
-  detailCard: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    fontSize: 20,
-  },
-});

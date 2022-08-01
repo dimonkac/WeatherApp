@@ -5,7 +5,7 @@ const headers = {
   Accept: 'application/json',
   'Content-Type': 'application/json',
   'X-RapidAPI-Key': '01e61f243cmshc95560c1fa1c0c8p16367djsnf473cd3d193b',
-  'X-RapidAPI-Host': 'community-open-weather-map.p.rapidapi.com',
+  'X-RapidAPI-Host': 'yahoo-weather5.p.rapidapi.com',
 };
 
 let api: ApisauceInstance;

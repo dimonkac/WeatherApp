@@ -1,14 +1,15 @@
-import {IListForecast, IListMounth, IMain} from '../../services/types';
-import * as types from '../actions/weatherActions';
+import {createSlice} from '@reduxjs/toolkit';
+import {IListMounth, IMain} from '../../services/types';
+import {IWeatherSagaAction} from '../sagas/weatherSaga';
 
 interface IAction {
   type: string;
-  data: IWeatherReducer;
+  payload: IWeatherReducer;
 }
 
 interface IWeatherReducer {
-  main?: IMain;
-  list?: IListMounth | IListForecast;
+  condition: IMain | null;
+  forecasts: Array<IListMounth> | null;
 }
 
 export interface IInitialState {
@@ -16,7 +17,6 @@ export interface IInitialState {
   name: string;
   weatherCurrentDate: IMain | null;
   weatherMounth: Array<IListMounth> | null;
-  weatherForecast: Array<IListForecast> | null;
 }
 
 const initialState: IInitialState = {
@@ -24,71 +24,57 @@ const initialState: IInitialState = {
   name: 'Zaporizhzhia',
   weatherCurrentDate: null,
   weatherMounth: null,
-  weatherForecast: null,
 };
 
-const weatherReducer = (state = initialState, action: IAction) => {
-  switch (action.type) {
-    case types.FETCH_WEATHER: {
-      return {
-        ...state,
-        isLoading: true,
-      };
-    }
-    case types.SUCCESS_WEATHER: {
-      return {
-        ...state,
-        weatherCurrentDate: action.data.main,
-        isLoading: false,
-      };
-    }
-    case types.FAILURE_WEATHER: {
-      return {
-        ...state,
-        isLoading: false,
-      };
-    }
-    case types.FETCH_MOUNTH_WEATHER: {
-      return {
-        ...state,
-        isLoading: true,
-      };
-    }
-    case types.SUCCESS_CALENDAR_WEATHER: {
-      return {
-        ...state,
-        weatherForecast: action.data.list,
-        isLoading: false,
-      };
-    }
-    case types.FAILURE_MOUNTH_WEATHER: {
-      return {
-        ...state,
-        isLoading: false,
-      };
-    }
-    case types.FETCH_MOUNTH_WEATHER: {
-      return {
-        ...state,
-        isLoading: true,
-      };
-    }
-    case types.SUCCESS_MOUNTH_WEATHER: {
-      return {
-        ...state,
-        isLoading: false,
-        weatherMounth: action.data.list,
-      };
-    }
-    case types.FAILURE_MOUNTH_WEATHER: {
-      return {
-        ...state,
-        isLoading: false,
-      };
-    }
-    default:
-      return state;
-  }
-};
+export const weatherSlice = createSlice({
+  name: 'weather',
+  initialState: initialState,
+  reducers: {
+    fetchWeather: (state: IInitialState, action: IWeatherSagaAction) => {
+      state.isLoading = true;
+      action;
+    },
+    successWeather: (state: IInitialState, action: IAction) => {
+      state.weatherCurrentDate = action.payload.condition;
+      state.isLoading = false;
+    },
+    failureWeather: (state: IInitialState) => {
+      state.isLoading = false;
+    },
+    fetchMounthWeather: (state: IInitialState, action: IWeatherSagaAction) => {
+      state.isLoading = true;
+      action;
+    },
+    successMounthWeather: (state: IInitialState, action: IAction) => {
+      state.weatherMounth = action.payload.forecasts;
+      state.isLoading = false;
+    },
+    failureMounthWeather: (state: IInitialState) => {
+      state.isLoading = false;
+    },
+    // fetchCalendarhWeather: (
+    //   state: IInitialState,
+    //   action: IWeatherSagaAction,
+    // ) => {
+    //   state.isLoading = true;
+    //   action;
+    // },
+    // successCalendarhWeather: (state: IInitialState, action: IAction) => {
+    //   state.isLoading = false;
+    //   state.weatherForecast = action.payload;
+    // },
+    // failureCalendarhWeather: (state: IInitialState) => {
+    //   state.isLoading = false;
+    // },
+  },
+});
 
-export default weatherReducer;
+export const {
+  fetchWeather,
+  successWeather,
+  failureWeather,
+  fetchMounthWeather,
+  successMounthWeather,
+  failureMounthWeather,
+} = weatherSlice.actions;
+export default weatherSlice.reducer;

@@ -1,28 +1,23 @@
 import React, {useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {WeatherDay} from '../screens/weatherDay';
-import {WeatherCalendar} from '../screens/weatherCalendar';
-import {WeatherMounth} from '../screens/weatherMount';
+import {WeatherDay} from '../screens/WeatherDay';
+import {WeatherCalendar} from '../screens/WeatherCalendar';
+import {WeatherMounth} from '../screens/WeatherMount';
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  fetchCalendarhWeather,
-  fetchMounthWeather,
-  fetchWeather,
-} from '../store/actions/weatherActions';
 import SvgRecervation from '../../assets/svg/reservation';
 import Mounth from '../../assets/svg/One-mounth';
 import Calendar from '../../assets/svg/Calendat-color';
 import {IRootReducer} from '../store/reducers';
+import {fetchWeather} from '../store/reducers/weatherReducers';
 
 const Tab = createBottomTabNavigator();
 
 export const RootNavigation = () => {
   const dispatch = useDispatch();
-  const {name} = useSelector((state: IRootReducer) => state.weatherReducer);
+  const {name} = useSelector((state: IRootReducer) => state.weather);
+
   useEffect(() => {
-    dispatch(fetchWeather({q: name, units: 'metric'}));
-    dispatch(fetchMounthWeather({q: name, units: 'metric'}));
-    dispatch(fetchCalendarhWeather({q: name, units: 'metric'}));
+    dispatch(fetchWeather({location: name, format: 'json', u: 'c'}));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (

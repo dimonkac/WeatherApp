@@ -1,4 +1,5 @@
-const baseURL = 'https://community-open-weather-map.p.rapidapi.com/';
+const baseURL = 'https://yahoo-weather5.p.rapidapi.com/';
+// const baseURL = 'https://community-open-weather-map.p.rapidapi.com/';
 const weather = 'weather';
 const forecast = 'forecast';
 const climateMonth = 'climate/month';

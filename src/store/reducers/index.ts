@@ -1,24 +1,21 @@
-import {applyMiddleware, combineReducers} from 'redux';
-import {legacy_createStore as createStore} from 'redux';
-import {composeWithDevTools} from 'redux-devtools-extension';
+import {configureStore} from '@reduxjs/toolkit';
+import {combineReducers} from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import rootSaga from '../sagas';
-import weatherReducer, {IInitialState} from './weatherReducers';
+import {IInitialState, weatherSlice} from './weatherReducers';
 
 export interface IRootReducer {
-  weatherReducer: IInitialState;
+  weather: IInitialState;
 }
 
-const rootReducer = combineReducers({weatherReducer});
+const rootReducer = combineReducers({weather: weatherSlice.reducer});
 
 const sagaMiddleware = createSagaMiddleware();
 
-const middlewares = [sagaMiddleware];
-
-export const store = createStore(
-  rootReducer,
-  composeWithDevTools(applyMiddleware(...middlewares)),
-);
+const store = configureStore({
+  reducer: rootReducer,
+  middleware: [sagaMiddleware],
+});
 
 sagaMiddleware.run(rootSaga);
 

@@ -1,42 +1,28 @@
 export interface ILocation {
-  q: string;
-  units?: string;
+  location: string;
+  format: string;
+  u: string;
 }
 
 export interface IMain {
-  temp: number;
-  feels_like: number;
-  temp_min: number;
-  temp_max: number;
-  pressure: number;
-  humidity: number;
-  sea_level: number;
-  grnd_level: number;
+  code: number;
+  text: string;
+  temperature: number;
 }
 
 export interface IListMounth {
-  dt: number;
-  humidit: number;
-  pressur: number;
-  wind_spee: number;
-  temp: ITemp;
+  day: string;
+  date: number;
+  low: number;
+  high: number;
+  text: string;
+  code: number;
 }
 
-export interface IListForecast {
-  dt: number;
-  visibility: number;
-  pop: number;
-  dt_txt: string;
-  main: any;
-  weather: any;
-  cloums: any;
-  sus: any;
+export interface IBigCardProps {
+  choozen?: IListMounth;
 }
 
-interface ITemp {
-  average: number;
-  average_max: number;
-  average_min: number;
-  record_max: number;
-  record_min: number;
+export interface ISmallCard {
+  item: IListMounth;
 }
